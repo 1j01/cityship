@@ -138,21 +138,26 @@ do @render = ->
 	ctx.restore()
 
 
+mouse_on_canvas = (e)->
+	rect = canvas.getBoundingClientRect()
+	x: e.clientX - rect.left
+	y: e.clientY - rect.top
 
-mouse_to_grid = (e)->
-	# TODO: view offset
-	x: ~~(e.clientX / tile_size)
-	y: ~~(e.clientY / tile_size)
+mouse_on_grid = (e)->
+	# TODO: view offset (i.e. panning)
+	{x, y} = mouse_on_canvas(e)
+	x: ~~(x / tile_size)
+	y: ~~(y / tile_size)
 
 window.addEventListener "mousemove", (e)->
-	{x, y} = mouse_to_grid(e)
+	{x, y} = mouse_on_grid(e)
 	if cursor.down
 		cursor.x2 = x
 		cursor.y2 = y
 		render()
 
 window.addEventListener "mouseup", (e)->
-	{x, y} = mouse_to_grid(e)
+	{x, y} = mouse_on_grid(e)
 	if e.button is 0
 		if cursor.x2? and cursor.y2?
 			x = Math.min(cursor.x, cursor.x2)
@@ -168,7 +173,7 @@ window.addEventListener "mouseup", (e)->
 		render()
 
 canvas.addEventListener "mousedown", (e)->
-	{x, y} = mouse_to_grid(e)
+	{x, y} = mouse_on_grid(e)
 	if e.button is 0
 		cursor.down = yes
 		cursor.x2 = cursor.x = x
