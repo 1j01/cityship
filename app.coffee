@@ -75,6 +75,7 @@ colors = {
 	"furnace": "#9c27b0",
 	"storage": "#4CAF50",
 	"winch": "#FF9800",
+	"shield": "#FFEB3B",
 }
 
 tile_size = 32
@@ -112,7 +113,8 @@ do @render = ->
 			#ctx.drawImage tile.image, x * tile_size, y * tile_size
 			ctx.fillStyle = "rgba(0, 0, 0, 0.5)"
 			# ctx.fillRect(x * tile_size, y * tile_size, tile_size, tile_size)
-			ctx.fillRect((x + 1/2) * tile_size - 2, (y + 1/2) * tile_size - 2, 4, 4)
+			dot_size = 4
+			ctx.fillRect((x + 1/2) * tile_size - dot_size/2, (y + 1/2) * tile_size - dot_size/2, dot_size, dot_size)
 	
 	for zone in zones
 		draw_zone(zone.x, zone.y, zone.w, zone.h, zone.type)
