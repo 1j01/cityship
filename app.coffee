@@ -1,9 +1,7 @@
 
 state =
 	zones: []
-	grid: [
-		# [{type: "furnace"}]
-	]
+	grid: []
 	zone_type: null
 
 
@@ -66,7 +64,7 @@ load_image = (src)->
 	img.src = src
 	img
 
-images = furnace: load_image ""
+# images = furnace: load_image ""
 
 colors = {
 	"population": "#263238",
@@ -79,13 +77,13 @@ colors = {
 }
 
 tile_size = 32
-cursor = {x: undefined, y: undefined, x2: undefined, y2: undefined, down: no}
-reset_cursor = ->
+cursor = {}
+do reset_cursor = ->
 	cursor.x = undefined
 	cursor.y = undefined
 	cursor.x2 = undefined
 	cursor.y2 = undefined
-	render()
+	cursor.down = no
 
 draw_zone = (x, y, w, h, zone_type, alpha=1)->
 	ctx.setLineDash([4, 2])
@@ -145,15 +143,11 @@ window.addEventListener "mousemove", (e)->
 	if cursor.down
 		cursor.x2 = x
 		cursor.y2 = y
-	#else
-		#cursor.x = x
-		#cursor.y = y
 	render()
 
 window.addEventListener "mouseup", (e)->
 	{x, y} = mouse_to_grid(e)
 	if e.button is 0
-		cursor.down = no
 		if cursor.x2? and cursor.y2?
 			x = Math.min(cursor.x, cursor.x2)
 			y = Math.min(cursor.y, cursor.y2)
@@ -166,6 +160,7 @@ window.addEventListener "mouseup", (e)->
 				})
 				render()
 		reset_cursor()
+		render()
 
 canvas.addEventListener "mousedown", (e)->
 	{x, y} = mouse_to_grid(e)
@@ -176,14 +171,12 @@ canvas.addEventListener "mousedown", (e)->
 		render()
 	else
 		reset_cursor()
-
-
-#canvas.addEventListener "mouseleave", (e)->
-	#reset_cursor()
+		render()
 
 window.addEventListener "contextmenu", (e)->
-	reset_cursor()
 	e.preventDefault()
+	reset_cursor()
+	render()
 
 window.addEventListener "keydown", (e)->
 	key = (e.key ? String.fromCharCode(e.keyCode)).toUpperCase()
