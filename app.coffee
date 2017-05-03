@@ -2,7 +2,7 @@
 state =
 	zones: []
 	grid: [
-		[{type: "furnace"}]
+		# [{type: "furnace"}]
 	]
 	zone_type: null
 
@@ -14,6 +14,14 @@ zone_type_select.addEventListener "change", (e)->
 	state.zone_type = get_zone_type()
 
 
+update_ship = ()->
+	{grid, zones} = state
+	for zone in zones
+		for x in [zone.x ... zone.x + zone.w]
+			for y in [zone.y ... zone.y + zone.h]
+				grid[y] ?= []
+				grid[y][x] = {type: zone.type}
+
 undos = []
 redos = []
 
@@ -22,6 +30,7 @@ get_state = ->
 
 set_state = (state_json)->
 	state = JSON.parse(state_json)
+	update_ship()
 	zone_type_select.value = state.zone_type
 
 undoable = (action)->
@@ -95,10 +104,15 @@ do @render = ->
 	
 	{grid, zones, zone_type} = state
 	
-	for row, y in grid
-		for tile, x in row
-			tile.image ?= images[tile.type]
+	update_ship()
+	
+	for row, y in grid when row
+		for tile, x in row when tile
+			# tile.image ?= images[tile.type]
 			#ctx.drawImage tile.image, x * tile_size, y * tile_size
+			ctx.fillStyle = "rgba(0, 0, 0, 0.5)"
+			# ctx.fillRect(x * tile_size, y * tile_size, tile_size, tile_size)
+			ctx.fillRect((x + 1/2) * tile_size - 2, (y + 1/2) * tile_size - 2, 4, 4)
 	
 	for zone in zones
 		draw_zone(zone.x, zone.y, zone.w, zone.h, zone.type)
