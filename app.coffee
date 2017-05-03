@@ -174,6 +174,16 @@ canvas.addEventListener "mousedown", (e)->
 		cursor.x2 = cursor.x = x
 		cursor.y2 = cursor.y = y
 		render()
+	else if e.button is 2
+		{zones} = state
+		for zone in zones
+			delete_zone = zone if (
+				zone.x <= x < zone.x + zone.w and
+				zone.y <= y < zone.y + zone.h
+			)
+		if delete_zone?
+			undoable ->
+				zones.splice(zones.indexOf(delete_zone), 1)
 	else
 		reset_cursor()
 		render()
