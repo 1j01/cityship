@@ -2,14 +2,14 @@
 state =
 	zones: []
 	grid: []
-	zone_type: null
 
+place_zone_type = null
 
 zone_type_select = document.getElementById("zone-type")
 get_zone_type = -> zone_type_select.options[zone_type_select.selectedIndex].value
-state.zone_type = get_zone_type()
+place_zone_type = get_zone_type()
 zone_type_select.addEventListener "change", (e)->
-	state.zone_type = get_zone_type()
+	place_zone_type = get_zone_type()
 
 
 update_ship = ()->
@@ -29,7 +29,6 @@ get_state = ->
 set_state = (state_json)->
 	state = JSON.parse(state_json)
 	update_ship()
-	zone_type_select.value = state.zone_type
 
 undoable = (action)->
 	saved = false
@@ -101,7 +100,7 @@ draw_zone = (x, y, w, h, zone_type, alpha=1)->
 do @render = ->
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
 	
-	{grid, zones, zone_type} = state
+	{grid, zones} = state
 	
 	update_ship()
 	
@@ -128,7 +127,7 @@ do @render = ->
 	
 	ctx.save()
 	alpha = if cursor.down then 0.5 else 0.3
-	draw_zone x, y, w, h, zone_type, alpha
+	draw_zone x, y, w, h, place_zone_type, alpha
 	ctx.restore()
 
 
@@ -156,7 +155,7 @@ window.addEventListener "mouseup", (e)->
 			undoable ->
 				state.zones.push({
 					x, y, w, h
-					type: state.zone_type
+					type: place_zone_type
 				})
 				render()
 		reset_cursor()
