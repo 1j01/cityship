@@ -96,8 +96,11 @@ do reset_cursor = ->
 draw_zone = (x, y, w, h, zone_type, alpha=1)->
 	ctx.setLineDash([4, 2])
 	ctx.lineWidth = 2
+	# b = ctx.lineWidth #/ 2
 	#ctx.fillRect(x * tile_size, y * tile_size, w * tile_size, h * tile_size)
-	roundRect(ctx, x * tile_size, y * tile_size, w * tile_size, h * tile_size, 5)
+	# roundRect(ctx, x * tile_size, y * tile_size, w * tile_size, h * tile_size, 5)
+	# roundRect(ctx, x * tile_size + b, y * tile_size + b, w * tile_size - b * 2, h * tile_size - b * 2, 5)
+	roundRect(ctx, x * tile_size + 1, y * tile_size + 1, w * tile_size - 3, h * tile_size - 3, 5)
 	color = colors[zone_type]
 	ctx.fillStyle = color
 	ctx.globalAlpha = alpha * 0.4
@@ -138,26 +141,26 @@ do @render = ->
 	ctx.restore()
 
 
-mouse_on_canvas = (e)->
+mouse_to_canvas_coords = (e)->
 	rect = canvas.getBoundingClientRect()
 	x: e.clientX - rect.left
 	y: e.clientY - rect.top
 
-mouse_on_grid = (e)->
+mouse_to_grid_coords = (e)->
 	# TODO: view offset (i.e. panning)
-	{x, y} = mouse_on_canvas(e)
+	{x, y} = mouse_to_canvas_coords(e)
 	x: ~~(x / tile_size)
 	y: ~~(y / tile_size)
 
 window.addEventListener "mousemove", (e)->
-	{x, y} = mouse_on_grid(e)
+	{x, y} = mouse_to_grid_coords(e)
 	if cursor.down
 		cursor.x2 = x
 		cursor.y2 = y
 		render()
 
 window.addEventListener "mouseup", (e)->
-	{x, y} = mouse_on_grid(e)
+	{x, y} = mouse_to_grid_coords(e)
 	if e.button is 0
 		if cursor.x2? and cursor.y2?
 			x = Math.min(cursor.x, cursor.x2)
@@ -173,7 +176,7 @@ window.addEventListener "mouseup", (e)->
 		render()
 
 canvas.addEventListener "mousedown", (e)->
-	{x, y} = mouse_on_grid(e)
+	{x, y} = mouse_to_grid_coords(e)
 	if e.button is 0
 		cursor.down = yes
 		cursor.x2 = cursor.x = x
