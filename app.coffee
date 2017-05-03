@@ -1,7 +1,8 @@
 
 state =
 	zones: []
-	grid: []
+
+grid = []
 
 place_zone_type = null
 
@@ -13,7 +14,8 @@ zone_type_select.addEventListener "change", (e)->
 
 
 update_ship = ()->
-	{grid, zones} = state
+	{zones} = state
+	grid = []
 	for zone in zones
 		for x in [zone.x ... zone.x + zone.w]
 			for y in [zone.y ... zone.y + zone.h]
@@ -23,12 +25,19 @@ update_ship = ()->
 undos = []
 redos = []
 
+state_changed = ->
+	update_ship()
+	try localStorage.cityship_state = JSON.stringify(state)
+	render()
+
 get_state = ->
 	JSON.stringify(state)
 
 set_state = (state_json)->
 	state = JSON.parse(state_json)
-	update_ship()
+	state_changed()
+
+try set_state(localStorage.cityship_state)
 
 undoable = (action)->
 	saved = false
@@ -37,6 +46,8 @@ undoable = (action)->
 	undos.push(get_state())
 	
 	action && action()
+	state_changed()
+	
 	return true
 
 undo = ->
@@ -44,7 +55,6 @@ undo = ->
 
 	redos.push(get_state())
 	set_state(undos.pop())
-	render()
 	
 	return true
 
@@ -53,7 +63,6 @@ redo = ->
 
 	undos.push(get_state())
 	set_state(redos.pop())
-	render()
 	
 	return true
 
@@ -100,9 +109,7 @@ draw_zone = (x, y, w, h, zone_type, alpha=1)->
 do @render = ->
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
 	
-	{grid, zones} = state
-	
-	update_ship()
+	{zones} = state
 	
 	for row, y in grid when row
 		for tile, x in row when tile
@@ -142,7 +149,7 @@ window.addEventListener "mousemove", (e)->
 	if cursor.down
 		cursor.x2 = x
 		cursor.y2 = y
-	render()
+		render()
 
 window.addEventListener "mouseup", (e)->
 	{x, y} = mouse_to_grid(e)
@@ -157,7 +164,6 @@ window.addEventListener "mouseup", (e)->
 					x, y, w, h
 					type: place_zone_type
 				})
-				render()
 		reset_cursor()
 		render()
 
