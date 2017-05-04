@@ -59,6 +59,54 @@ function roundRect(ctx, x, y, w, h, r) {
 	ctx.arcTo(x,   y,   x+w, y,   r);
 	ctx.closePath();
 }
+
+// function countIslands(map, row) {
+// 	var s = 0;
+// 	function search(index, flag) {
+// 		if (map[index] === 0) {
+// 			map[index] = (s += flag|0);
+// 			search(index-1); // Recurse left
+// 			search(index+row); // Recurse 1 row below
+// 			search(index+1); // Recurse right
+// 			search(index-row); // Recurse 1 row above
+// 		}
+// 	}
+// 	for (var i = 0; i < map.length; i++) {
+// 		search(i, 1);
+// 	}
+// 	return s;
+// }
+
+function getIslandCount(matrix) {
+	var count = 0;
+	if (matrix.length == 0) {
+		return count;
+	}
+	var tempMatrix = JSON.parse(JSON.stringify(matrix));
+	for (var i = 0; i < tempMatrix.length; i++) {
+		for (var j = 0; j < tempMatrix[i].length; j++) {
+			if (detectAndRemoveIsland(tempMatrix, false, i, j, matrix.length - 1, matrix[i].length - 1)) {
+				count++;
+			}
+		}
+	}
+	return count;
+}
+
+function detectAndRemoveIsland(tempMatrix, islandDetected, i, j, iMax, jMax) {
+	if (i > iMax || j > jMax || i < 0 || j < 0 || tempMatrix[i][j] == 0) {
+		return islandDetected;
+	} else {
+		tempMatrix[i][j] = 0;
+		islandDetected = true;
+		detectAndRemoveIsland(tempMatrix, islandDetected, i - 1, j, iMax, jMax);
+		detectAndRemoveIsland(tempMatrix, islandDetected, i, j - 1, iMax, jMax);
+		detectAndRemoveIsland(tempMatrix, islandDetected, i + 1, j, iMax, jMax);
+		detectAndRemoveIsland(tempMatrix, islandDetected, i, j + 1, iMax, jMax);
+	}
+	return islandDetected;
+}
+
 </script>
 <script src="app.coffee" type="text/coffeescript"></script>
 </body>

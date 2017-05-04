@@ -13,14 +13,49 @@ zone_type_select.addEventListener "change", (e)->
 	place_zone_type = get_zone_type()
 
 
-update_ship = ()->
+update_ship = ->
 	{zones} = state
 	grid = []
+	width = 0
+	height = 0
 	for zone in zones
 		for x in [zone.x ... zone.x + zone.w]
 			for y in [zone.y ... zone.y + zone.h]
 				grid[y] ?= []
 				grid[y][x] = {type: zone.type}
+				width = Math.max(width, x)
+				height = Math.max(height, y)
+	
+	for y in [0..height]
+		grid[y] ?= []
+	
+	loop
+		island_detection_matrix = []
+		for y in [0..height]
+			island_detection_matrix[y] ?= []
+			for x in [0..width]
+				island_detection_matrix[y][x] = if grid[y]?[x]? then 1 else 0
+		
+		island_count = getIslandCount(island_detection_matrix)
+		console.log "Island count:", island_count
+		break if island_count <= 1
+		
+		new_grid = []
+		for y in [0..height]
+			new_grid[y] ?= []
+		
+		for y in [0..height]
+			for x in [0..width]
+				if grid[y]?[x]?
+					new_grid[y][x] = grid[y][x]
+					new_grid[y - 1]?[x] ?= {type: "structural"}
+					new_grid[y + 1]?[x] ?= {type: "structural"}
+					new_grid[y]?[x - 1] ?= {type: "structural"}
+					new_grid[y]?[x + 1] ?= {type: "structural"}
+		
+		grid = new_grid
+
+	
 
 undos = []
 redos = []
@@ -36,8 +71,6 @@ get_state = ->
 set_state = (state_json)->
 	state = JSON.parse(state_json)
 	state_changed()
-
-try set_state(localStorage.cityship_state)
 
 undoable = (action)->
 	saved = false
@@ -115,12 +148,16 @@ do @render = ->
 	{zones} = state
 	
 	for row, y in grid when row
-		for tile, x in row when tile
+		for cell, x in row when cell
 			# tile.image ?= images[tile.type]
 			#ctx.drawImage tile.image, x * tile_size, y * tile_size
-			ctx.fillStyle = "rgba(0, 0, 0, 0.5)"
+			if cell.type is "structural"
+				ctx.fillStyle = "rgba(0, 0, 0, 0.4)"
+				dot_size = 4
+			else
+				ctx.fillStyle = colors[cell.type] #"rgba(0, 0, 0, 0.2)"
+				dot_size = 4
 			# ctx.fillRect(x * tile_size, y * tile_size, tile_size, tile_size)
-			dot_size = 4
 			ctx.fillRect((x + 1/2) * tile_size - dot_size/2, (y + 1/2) * tile_size - dot_size/2, dot_size, dot_size)
 	
 	for zone in zones
@@ -226,3 +263,6 @@ window.addEventListener "keydown", (e)->
 			else
 				return # don't prevent default
 	e.preventDefault()
+
+try set_state(localStorage.cityship_state)
+render()
