@@ -55,50 +55,17 @@ update_ship = ->
 		
 		grid = new_grid
 
-	
-
-undos = []
-redos = []
-
-state_changed = ->
+@state_changed = ->
 	update_ship()
 	try localStorage.cityship_state = JSON.stringify(state)
 	render()
 
-get_state = ->
+@get_state = ->
 	JSON.stringify(state)
 
-set_state = (state_json)->
+@set_state = (state_json)->
 	state = JSON.parse(state_json)
 	state_changed()
-
-undoable = (action)->
-	saved = false
-	redos = []
-	
-	undos.push(get_state())
-	
-	action && action()
-	state_changed()
-	
-	return true
-
-undo = ->
-	return false if undos.length < 1
-
-	redos.push(get_state())
-	set_state(undos.pop())
-	
-	return true
-
-redo = ->
-	return false if redos.length < 1
-
-	undos.push(get_state())
-	set_state(redos.pop())
-	
-	return true
-
 
 load_image = (src)->
 	img = new Image
@@ -265,4 +232,3 @@ window.addEventListener "keydown", (e)->
 	e.preventDefault()
 
 try set_state(localStorage.cityship_state)
-render()

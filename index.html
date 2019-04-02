@@ -42,11 +42,13 @@
 	</select>
 </div>
 <script>
-~function(){var d=document,b=d.body,c=b.appendChild(d.createElement("canvas")),p,i,k
+~function(){
+var d=document,b=d.body,c=b.appendChild(d.createElement("canvas")),p,i,k
 canvas=c;ctx=c.getContext("2d")
 b.style.overflow="hidden";b.style.margin=0;(onresize=function(){c.width=innerWidth,c.height=innerHeight,self.render&&render()})()
 animate=function a(f){f(),requestAnimationFrame(function(){a(f)})}
-for(p=Object.getOwnPropertyNames(Math),i=0;k=p[i];i++){self[k]=Math[k]}TAU=PI*2}()
+for(p=Object.getOwnPropertyNames(Math),i=0;k=p[i];i++){self[k]=Math[k]}TAU=PI*2
+}()
 
 function roundRect(ctx, x, y, w, h, r) {
 	if (w < 2 * r) r = w / 2;
@@ -59,23 +61,6 @@ function roundRect(ctx, x, y, w, h, r) {
 	ctx.arcTo(x,   y,   x+w, y,   r);
 	ctx.closePath();
 }
-
-// function countIslands(map, row) {
-// 	var s = 0;
-// 	function search(index, flag) {
-// 		if (map[index] === 0) {
-// 			map[index] = (s += flag|0);
-// 			search(index-1); // Recurse left
-// 			search(index+row); // Recurse 1 row below
-// 			search(index+1); // Recurse right
-// 			search(index-row); // Recurse 1 row above
-// 		}
-// 	}
-// 	for (var i = 0; i < map.length; i++) {
-// 		search(i, 1);
-// 	}
-// 	return s;
-// }
 
 function getIslandCount(matrix) {
 	var count = 0;
@@ -108,5 +93,6 @@ function detectAndRemoveIsland(tempMatrix, islandDetected, i, j, iMax, jMax) {
 }
 
 </script>
+<script src="state-history.coffee" type="text/coffeescript"></script>
 <script src="app.coffee" type="text/coffeescript"></script>
 </body>
